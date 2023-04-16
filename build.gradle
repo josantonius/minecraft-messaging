@@ -51,6 +51,24 @@ publishing {
             groupId = 'dev.josantonius.minecraft.messaging'
             artifactId = 'library'
             version = 'v1.0.0'
+            pom {
+                name = 'Minecraft Messaging Library'
+                description = 'Easily send messages to players on a Minecraft server running PaperMC, Bukkit, or Spigot'
+                url = 'https://github.com/josantonius/minecraft-messaging'
+                licenses {
+                    license {
+                        name = 'MIT'
+                        url = 'https://github.com/josantonius/minecraft-messaging/blob/main/LICENSE'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'josantonius'
+                        name = 'Josantonius'
+                        email = 'hello@josantonius.dev'
+                    }
+                }
+            }
 
             from components.java
         }
