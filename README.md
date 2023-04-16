@@ -197,7 +197,7 @@ import org.bukkit.entity.Player
 import dev.josantonius.minecraft.messaging.Message
 
 val message = Message(File("path/to/messages.yml"))
-val targetPlayer: Player = ...
+val targetPlayer: Player = //...
 
 message.sendToPlayer(
     player = targetPlayer, 
@@ -222,7 +222,7 @@ import org.bukkit.entity.Player
 import dev.josantonius.minecraft.messaging.Message
 
 val message = Message(File("path/to/messages.yml"))
-val targetPlayer: Player = ...
+val targetPlayer: Player = //...
 
 message.sendToPlayer(
     player = targetPlayer,
@@ -295,7 +295,7 @@ import org.bukkit.Location
 import dev.josantonius.minecraft.messaging.Message
 
 val message = Message(File("path/to/messages.yml"))
-val center: Location = ...
+val center: Location = //...
 
 message.sendToPlayersWithinRadius(
     center = center,
@@ -322,7 +322,7 @@ import org.bukkit.Location
 import dev.josantonius.minecraft.messaging.Message
 
 val message = Message(File("path/to/messages.yml"))
-val center: Location = ...
+val center: Location = //...
 
 message.sendToPlayersWithinRadius(
     center = center,
@@ -349,7 +349,7 @@ import org.bukkit.Location
 import dev.josantonius.minecraft.messaging.Message
 
 val message = Message(File("path/to/messages.yml"))
-val center: Location = ...
+val center: Location = //...
 
 message.sendToPlayersWithPermissionWithinRadius(
   permission = "announcement.use",
@@ -376,7 +376,7 @@ import org.bukkit.Location
 import dev.josantonius.minecraft.messaging.Message
 
 val message = Message(File("path/to/messages.yml"))
-val center: Location = ...
+val center: Location = //...
 
 message.sendToPlayersWithPermissionWithinRadius(
     permission = "treasure.use",
