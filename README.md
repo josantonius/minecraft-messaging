@@ -36,9 +36,7 @@ First, add the repository containing the minecraft-messaging library to your pro
 
 ```groovy
 repositories {
-    maven {
-        url = uri("https://github.com/josantonius/minecraft-messaging/")
-    }
+    maven { url 'https://jitpack.io' }
 }
 ```
 
@@ -46,7 +44,7 @@ Then, add the minecraft-messaging library as a dependency to your project's buil
 
 ```groovy
 dependencies {
-    compileOnly("dev.josantonius.minecraft.messaging:minecraft-messaging:1.0.0")
+    implementation 'dev.josantonius:minecraft-messaging:v1.0.0'
 }
 ```
 
@@ -118,7 +116,7 @@ fun sendToPlayersWithinRadius(
 ```
 
 Sends message to players with specific permission within a radius
-of a center point using a key and optional parameters:
+of a center point using a key and optional params:
 
 ```kotlin
 /**
@@ -128,8 +126,13 @@ of a center point using a key and optional parameters:
  * @param key        The key associated with the message in the message file.
  * @param params     Optional parameters to replace placeholders in the message.
  */
-
-
+fun sendToPlayersWithPermissionWithinRadius(
+  permission: String,
+  center: Location,
+  radius: Double,
+  key: String,
+  vararg params: String
+)
 ```
 
 ## Usage
