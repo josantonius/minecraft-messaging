@@ -1,6 +1,6 @@
 # Minecraft Messaging Library
 
-[![Release](https://jitpack.io/v/dev.josantonius/minecraft-messaging.svg)](<https://jitpack.io/#dev.josantonius/minecraft-messaging>)
+[![Release](https://jitpack.io/v/dev.josantonius/minecraft-messaging.svg)](https://jitpack.io/#dev.josantonius/minecraft-messaging)
 [![License](https://img.shields.io/github/license/josantonius/minecraft-messaging)](LICENSE)
 
 Easily send messages to players on a Minecraft server running PaperMC, Bukkit, or Spigot.
