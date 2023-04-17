@@ -65,6 +65,17 @@ Creates a new Message object with the given message file:
 class Message(private val file: File)
 ```
 
+Retrieves the message associated with the given key.
+If the message is not found, returns the given string:
+
+```kotlin
+/**
+ * @param key The key associated with the message in the message file.
+ * @param params Optional parameters to replace placeholders in the message.
+ */
+fun get(key: String, vararg params: String): String
+```
+
 Sends a message with the given key and optional parameters to all online players on the server:
 
 ```kotlin
@@ -146,18 +157,52 @@ Sends a system message with a level to the console:
 fun sendToSystem(level: Level, key: String, vararg params: String)
 ```
 
-Retrieves the message associated with the given key.
-If the message is not found, returns the given string:
+## Usage
 
-```kotlin
-/**
- * @param key The key associated with the message in the message file.
- * @param params Optional parameters to replace placeholders in the message.
- */
-fun getMessage(key: String, vararg params: String): String
+### Retrieves the message associated with the given key
+
+**`messages.yml`**
+
+```yml
+player:
+  win: "Congratulations, you won the game!"
 ```
 
-## Usage
+**`Main.kt`**
+
+```kotlin
+import java.io.File
+import dev.josantonius.minecraft.messaging.Message
+
+val message = Message(File("path/to/messages.yml"))
+
+message.get(
+    key = "player.win"
+)
+```
+
+### Retrieves the message associated with the given key with parameters
+
+**`messages.yml`**
+
+```yml
+player:
+  win: "Congratulations, you won the {1} game!"
+```
+
+**`Main.kt`**
+
+```kotlin
+import java.io.File
+import dev.josantonius.minecraft.messaging.Message
+
+val message = Message(File("path/to/messages.yml"))
+
+message.get(
+    key = "player.win",
+    params = arrayOf("first")
+)
+```
 
 ### Send message to all online players on the server
 
@@ -455,51 +500,6 @@ message.sendToSystem(
     level = Level.INFO, 
     key = "info.wrong_input",
     params = arrayOf("command")
-)
-```
-
-### Retrieves the message associated with the given key
-
-**`messages.yml`**
-
-```yml
-player:
-  win: "Congratulations, you won the game!"
-```
-
-**`Main.kt`**
-
-```kotlin
-import java.io.File
-import dev.josantonius.minecraft.messaging.Message
-
-val message = Message(File("path/to/messages.yml"))
-
-message.getMessage(
-    key = "player.win"
-)
-```
-
-### Retrieves the message associated with the given key with parameters
-
-**`messages.yml`**
-
-```yml
-player:
-  win: "Congratulations, you won the {1} game!"
-```
-
-**`Main.kt`**
-
-```kotlin
-import java.io.File
-import dev.josantonius.minecraft.messaging.Message
-
-val message = Message(File("path/to/messages.yml"))
-
-message.getMessage(
-    key = "player.win",
-    params = arrayOf("first")
 )
 ```
 
