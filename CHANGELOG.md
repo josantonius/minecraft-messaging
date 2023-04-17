@@ -8,5 +8,5 @@
 
 ### Added
 
-* `dev.josantonius.minecraft.messaging.get()` method.
-* `dev.josantonius.minecraft.messaging.sendToSystem()` method.
+* `dev.josantonius.minecraft.messaging.Message.get()` method.
+* `dev.josantonius.minecraft.messaging.Message.sendToSystem()` method.
