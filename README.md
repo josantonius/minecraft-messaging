@@ -135,6 +135,28 @@ fun sendToPlayersWithPermissionWithinRadius(
 )
 ```
 
+Sends a system message with a level to the console:
+
+```kotlin
+/**
+ * @param level The level of the system message for the console.
+ * @param key The key associated with the message in the message file.
+ * @param params Optional parameters to replace placeholders in the message.
+ */
+fun sendToSystem(level: Level, key: String, vararg params: String)
+```
+
+Retrieves the message associated with the given key.
+If the message is not found, returns the given string:
+
+```kotlin
+/**
+ * @param key The key associated with the message in the message file.
+ * @param params Optional parameters to replace placeholders in the message.
+ */
+fun getMessage(key: String, vararg params: String): String
+```
+
 ## Usage
 
 ### Send message to all online players on the server
@@ -384,6 +406,100 @@ message.sendToPlayersWithPermissionWithinRadius(
     radius = 50.0,
     key = "treasure.hint",
     params = arrayOf("100", "200", "300")
+)
+```
+
+### Sends a system message with a level to the console
+
+**`messages.yml`**
+
+```yml
+warnings:
+  wrong_input: "Warning: it is not a valid input."
+```
+
+**`Main.kt`**
+
+```kotlin
+import java.io.File
+import java.util.logging.Level
+import dev.josantonius.minecraft.messaging.Message
+
+val message = Message(File("path/to/messages.yml"))
+
+message.sendToSystem(
+    level = Level.WARNING, 
+    key = "warnings.wrong_input"
+)
+```
+
+### Sends a system message with a level to the console with parameters
+
+**`messages.yml`**
+
+```yml
+info:
+  wrong_input: "Info: {} is not a valid input."
+```
+
+**`Main.kt`**
+
+```kotlin
+import java.io.File
+import java.util.logging.Level
+import dev.josantonius.minecraft.messaging.Message
+
+val message = Message(File("path/to/messages.yml"))
+
+message.sendToSystem(
+    level = Level.INFO, 
+    key = "info.wrong_input",
+    params = arrayOf("command")
+)
+```
+
+### Retrieves the message associated with the given key
+
+**`messages.yml`**
+
+```yml
+player:
+  win: "Congratulations, you won the game!"
+```
+
+**`Main.kt`**
+
+```kotlin
+import java.io.File
+import dev.josantonius.minecraft.messaging.Message
+
+val message = Message(File("path/to/messages.yml"))
+
+message.getMessage(
+    key = "player.win"
+)
+```
+
+### Retrieves the message associated with the given key with parameters
+
+**`messages.yml`**
+
+```yml
+player:
+  win: "Congratulations, you won the {1} game!"
+```
+
+**`Main.kt`**
+
+```kotlin
+import java.io.File
+import dev.josantonius.minecraft.messaging.Message
+
+val message = Message(File("path/to/messages.yml"))
+
+message.getMessage(
+    key = "player.win",
+    params = arrayOf("first")
 )
 ```
 
