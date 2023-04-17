@@ -28,6 +28,25 @@ class Message(file: File) {
     }
 
     /**
+     * Retrieves the message associated with the given key. If the message is not found, returns the
+     * given string.
+     *
+     * @param key The key associated with the message in the message file.
+     * @param params Optional parameters to replace placeholders in the message.
+     */
+    fun get(key: String, vararg params: String): String {
+        var message = messages.getString(key)
+        if (message == null) {
+            Bukkit.getLogger().warning("Message not found for key:$key")
+        } else {
+            for (i in params.indices) {
+                message = message?.replace("{" + (i + 1) + "}", params[i])
+            }
+        }
+        return message ?: key
+    }
+
+    /**
      * Sends a message with the given key and optional parameters to all online players.
      *
      * @param key The key associated with the message in the message file.
@@ -105,26 +124,7 @@ class Message(file: File) {
      * @param params Optional parameters to replace placeholders in the message.
      */
     fun sendToSystem(level: Level, key: String, vararg params: String) {
-        Bukkit.getLogger().log(level, getMessage(key, *params))
-    }
-
-    /**
-     * Retrieves the message associated with the given key. If the message is not found, returns the
-     * given string.
-     *
-     * @param key The key associated with the message in the message file.
-     * @param params Optional parameters to replace placeholders in the message.
-     */
-    fun getMessage(key: String, vararg params: String): String {
-        var message = messages.getString(key)
-        if (message == null) {
-            Bukkit.getLogger().warning("Message not found for key:$key")
-        } else {
-            for (i in params.indices) {
-                message = message?.replace("{" + (i + 1) + "}", params[i])
-            }
-        }
-        return message ?: key
+        Bukkit.getLogger().log(level, get(key, *params))
     }
 
     /**
@@ -152,7 +152,7 @@ class Message(file: File) {
      * @param params Optional parameters to replace placeholders in the message.
      */
     private fun sendMessageToAll(key: String, vararg params: String) {
-        val message = getMessage(key, *params)
+        val message = get(key, *params)
         val component = Component.text(message)
         Bukkit.getServer().sendMessage(component)
     }
@@ -166,7 +166,7 @@ class Message(file: File) {
      * @param params Optional parameters to replace placeholders in the message.
      */
     private fun sendMessageToPlayer(player: Player, key: String, vararg params: String) {
-        val message = getMessage(key, *params)
+        val message = get(key, *params)
         val component = Component.text(message)
         player.sendMessage(component)
     }
@@ -184,7 +184,7 @@ class Message(file: File) {
             key: String,
             vararg params: String
     ) {
-        val message = getMessage(key, *params)
+        val message = get(key, *params)
         val component = Component.text(message)
         val playersWithPermission =
                 Bukkit.getServer().onlinePlayers.filter { it.hasPermission(permission) }
@@ -207,7 +207,7 @@ class Message(file: File) {
             key: String,
             vararg params: String
     ) {
-        val message = getMessage(key, *params)
+        val message = get(key, *params)
         val component = Component.text(message)
         val playersWithinRadius =
                 Bukkit.getServer().onlinePlayers.filter { it.location.distance(center) <= radius }
@@ -232,7 +232,7 @@ class Message(file: File) {
             key: String,
             vararg params: String
     ) {
-        val message = getMessage(key, *params)
+        val message = get(key, *params)
         val component = Component.text(message)
         val playersWithPermissionAndWithinRadius =
                 Bukkit.getServer().onlinePlayers.filter {
