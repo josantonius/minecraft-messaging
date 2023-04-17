@@ -3,6 +3,7 @@ package dev.josantonius.minecraft.messaging
 import java.io.File
 import java.io.FileReader
 import java.io.IOException
+import java.util.logging.Level
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -94,6 +95,36 @@ class Message(file: File) {
             vararg params: String
     ) {
         sendMessageToPlayersWithPermissionWithinRadius(permission, center, radius, key, *params)
+    }
+
+    /**
+     * Sends a system message with a level to the console.
+     *
+     * @param level The level of the system message for the console.
+     * @param key The key associated with the message in the message file.
+     * @param params Optional parameters to replace placeholders in the message.
+     */
+    fun sendToSystem(level: Level, key: String, vararg params: String) {
+        Bukkit.getLogger().log(level, getMessage(key, *params))
+    }
+
+    /**
+     * Retrieves the message associated with the given key. If the message is not found, returns the
+     * given string.
+     *
+     * @param key The key associated with the message in the message file.
+     * @param params Optional parameters to replace placeholders in the message.
+     */
+    fun getMessage(key: String, vararg params: String): String {
+        var message = messages.getString(key)
+        if (message == null) {
+            Bukkit.getLogger().warning("Message not found for key:$key")
+        } else {
+            for (i in params.indices) {
+                message = message?.replace("{" + (i + 1) + "}", params[i])
+            }
+        }
+        return message ?: key
     }
 
     /**
@@ -208,26 +239,5 @@ class Message(file: File) {
                     it.hasPermission(permission) && it.location.distance(center) <= radius
                 }
         playersWithPermissionAndWithinRadius.forEach { it.sendMessage(component) }
-    }
-
-    /**
-     * Retrieves the message associated with the given key from the 'messages' object, replaces any
-     * placeholders with the provided parameters, and returns the formatted message. If the message
-     * is not found, it logs a warning and returns an error message.
-     *
-     * @param key The key associated with the message in the message file.
-     * @param params Optional parameters to replace placeholders in the message.
-     */
-    private fun getMessage(key: String, vararg params: String): String {
-        var message = messages.getString(key)
-        if (message == null) {
-            Bukkit.getLogger().warning("Message not found for key:$key")
-            message = "Error: Message not found"
-        } else {
-            for (i in params.indices) {
-                message = message?.replace("{" + (i + 1) + "}", params[i])
-            }
-        }
-        return message ?: "Error: Message not found"
     }
 }
