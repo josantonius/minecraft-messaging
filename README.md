@@ -73,7 +73,7 @@ If the message is not found, returns the given string:
  * @param key The key associated with the message in the message file.
  * @param params Optional parameters to replace placeholders in the message.
  */
-fun get(key: String, vararg params: String): String
+fun retrieve(key: String, vararg params: String): String
 ```
 
 Sends a message with the given key and optional parameters to all online players on the server:
@@ -176,7 +176,7 @@ import dev.josantonius.minecraft.messaging.Message
 
 val message = Message(File("path/to/messages.yml"))
 
-message.get(
+message.retrieve(
     key = "player.win"
 )
 ```
@@ -198,7 +198,7 @@ import dev.josantonius.minecraft.messaging.Message
 
 val message = Message(File("path/to/messages.yml"))
 
-message.get(
+message.retrieve(
     key = "player.win",
     params = arrayOf("first")
 )
