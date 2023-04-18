@@ -4,7 +4,7 @@
 
 ### Added
 
-* Add functionality for clickable message components.
+* Functionality for clickable message components.
 
 * `dev.josantonius.minecraft.messaging.ComponentUtils` class.
 * `dev.josantonius.minecraft.messaging.ComponentUtils.parseClickableComponents()` private method.
