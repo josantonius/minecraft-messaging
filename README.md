@@ -18,6 +18,7 @@ The messages are stored in a YAML file and can be easily formatted with placehol
   - [Message Class](#message-class)
 - [Usage](#usage)
 - [Using Clickable Tags in Messages](#using-clickable-tags-in-messages)
+- [Using Color Codes in Messages](#using-color-codes-in-messages)
 - [TODO](#todo)
 - [Changelog](#changelog)
 - [Contribution](#contribution)
@@ -160,27 +161,62 @@ fun sendToSystem(level: Level, key: String, vararg params: String)
 
 ## Using Clickable Tags in Messages
 
-You can use the following tags within any message in your message files to create clickable links and
+You can use the following tags within any message in your YAML files to create clickable links and
 commands:
 
-- `<link>URL</link>`: Displays a clickable link that opens the specified URL when clicked. The URL
-itself will be displayed as the clickable text.
-- `<link=URL>Custom Text</link>`: Displays a clickable link with custom text that opens the
-specified URL when clicked.
-- `<command>Command</command>`: Displays a clickable text that runs the specified command when
-clicked. The command itself will be displayed as the clickable text.
-- `<command=Command>Custom Text</command>`: Displays a clickable text with custom text that runs the
-specified command when clicked.
+- Displays a clickable link that opens the specified URL when clicked.:
 
-For input strings without any of these tags, the message will appear as plain, non-clickable text.
+  - `<link>URL</link>`
+
+- Displays a clickable link with custom text that opens the specified URL when clicked:
+
+  - `<link=URL>Custom Text</link>`
+
+- Displays a clickable text that runs the specified command when clicked.:
+
+  - `<command>Command</command>`
+
+- Displays a clickable text with custom text that runs the specified command when clicked:
+
+  - `<command=Command>Custom Text</command>`
 
 **Example usage in YAML files**:
 
 ```yml
 cancel_challenge: "Run <command>/cancel</command> to cancel the challenge."
 challenge_player: "Challenge a player by clicking <command=/challenge>here</command>."
-deny_challenge: "Visit our <link=https://mc.com>rules page</link> before accepting challenges."
-deny_challenge: "See our <link>https://mc.com</link> before accepting challenges."
+visit_site: "Visit our <link=https://mc.com>rules page</link> before accepting challenges."
+see_rules: "See our <link>https://mc.com</link> before accepting challenges."
+```
+
+## Using Color Codes in Messages
+
+You can use color codes within any message in your YAML files to change the color of the text.
+To apply a color, use the & symbol followed by a color code. Here are the available color codes:
+
+- `§0` - Black
+- `§1` - Dark Blue
+- `§2` - Dark Green
+- `§3` - Dark Aqua
+- `§4` - Dark Red
+- `§5` - Dark Purple
+- `§6` - Gold
+- `§7` - Gray
+- `§8` - Dark Gray
+- `§9` - Blue
+- `§a` - Green
+- `§b` - Aqua
+- `§c` - Red
+- `§d` - Light Purple
+- `§e` - Yellow
+- `§f` - White
+
+**Example usage in YAML files**:
+
+```yml
+welcome_message: "&eWelcome to our server! &aHave fun and enjoy your stay."
+info_message: "&bFor more information, visit our &9<link={1}>website</link>&b."
+warning_message: "&cBe careful! &6Make sure to follow the rules."
 ```
 
 ## Usage
