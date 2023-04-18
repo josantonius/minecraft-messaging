@@ -4,7 +4,6 @@ import java.io.File
 import java.io.FileReader
 import java.io.IOException
 import java.util.logging.Level
-import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.configuration.file.FileConfiguration
@@ -153,7 +152,7 @@ class Message(file: File) {
      */
     private fun sendMessageToAll(key: String, vararg params: String) {
         val message = retrieve(key, *params)
-        val component = Component.text(message)
+        val component = ComponentUtils.parseClickableComponents(message)
         Bukkit.getServer().sendMessage(component)
     }
 
@@ -167,7 +166,7 @@ class Message(file: File) {
      */
     private fun sendMessageToPlayer(player: Player, key: String, vararg params: String) {
         val message = retrieve(key, *params)
-        val component = Component.text(message)
+        val component = ComponentUtils.parseClickableComponents(message)
         player.sendMessage(component)
     }
 
@@ -185,7 +184,7 @@ class Message(file: File) {
             vararg params: String
     ) {
         val message = retrieve(key, *params)
-        val component = Component.text(message)
+        val component = ComponentUtils.parseClickableComponents(message)
         val playersWithPermission =
                 Bukkit.getServer().onlinePlayers.filter { it.hasPermission(permission) }
         playersWithPermission.forEach { it.sendMessage(component) }
@@ -208,7 +207,7 @@ class Message(file: File) {
             vararg params: String
     ) {
         val message = retrieve(key, *params)
-        val component = Component.text(message)
+        val component = ComponentUtils.parseClickableComponents(message)
         val playersWithinRadius =
                 Bukkit.getServer().onlinePlayers.filter { it.location.distance(center) <= radius }
         playersWithinRadius.forEach { it.sendMessage(component) }
@@ -233,7 +232,7 @@ class Message(file: File) {
             vararg params: String
     ) {
         val message = retrieve(key, *params)
-        val component = Component.text(message)
+        val component = ComponentUtils.parseClickableComponents(message)
         val playersWithPermissionAndWithinRadius =
                 Bukkit.getServer().onlinePlayers.filter {
                     it.hasPermission(permission) && it.location.distance(center) <= radius
