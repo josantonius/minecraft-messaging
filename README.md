@@ -17,6 +17,7 @@ The messages are stored in a YAML file and can be easily formatted with placehol
 - [Available Classes](#available-classes)
   - [Message Class](#message-class)
 - [Usage](#usage)
+- [Using Clickable Tags in Messages](#using-clickable-tags-in-messages)
 - [TODO](#todo)
 - [Changelog](#changelog)
 - [Contribution](#contribution)
@@ -155,6 +156,31 @@ Sends a system message with a level to the console:
  * @param params Optional parameters to replace placeholders in the message.
  */
 fun sendToSystem(level: Level, key: String, vararg params: String)
+```
+
+## Using Clickable Tags in Messages
+
+You can use the following tags within any message in your message files to create clickable links and
+commands:
+
+- `<link>URL</link>`: Displays a clickable link that opens the specified URL when clicked. The URL
+itself will be displayed as the clickable text.
+- `<link=URL>Custom Text</link>`: Displays a clickable link with custom text that opens the
+specified URL when clicked.
+- `<command>Command</command>`: Displays a clickable text that runs the specified command when
+clicked. The command itself will be displayed as the clickable text.
+- `<command=Command>Custom Text</command>`: Displays a clickable text with custom text that runs the
+specified command when clicked.
+
+For input strings without any of these tags, the message will appear as plain, non-clickable text.
+
+**Example usage in YAML files**:
+
+```yml
+cancel_challenge: "Run <command>/cancel</command> to cancel the challenge."
+challenge_player: "Challenge a player by clicking <command=/challenge>here</command>."
+deny_challenge: "Visit our <link=https://mc.com>rules page</link> before accepting challenges."
+deny_challenge: "See our <link>https://mc.com</link> before accepting challenges."
 ```
 
 ## Usage
