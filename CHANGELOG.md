@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## [v1.0.1](https://github.com/josantonius/minecraft-messaging/releases/tag/v1.0.1) (2023-04-17)
+## [v1.0.1](https://github.com/josantonius/minecraft-messaging/releases/tag/v1.0.1) (2023-04-18)
 
 ### Added
 
