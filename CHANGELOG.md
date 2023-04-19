@@ -2,7 +2,7 @@
 
 ## [v1.0.4](https://github.com/josantonius/minecraft-messaging/releases/tag/v1.0.4) (2023-04-19)
 
-### Added
+### Changed
 
 * Changes in documentation.
 
