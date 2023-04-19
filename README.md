@@ -60,11 +60,17 @@ Creates a new Message object with the given message file:
 
 ```kotlin
 /**
- * @param file The File object representing the message file.
- * 
+ * Represents a message with optional custom hover messages for link and command components.
+ *
+ * @property file The file from which the message is read.
+ * @property hoverMessages A map with custom hover messages for link and command components.
+ *                         The keys should be "link" and "command", and the values should be
+ *                         the corresponding custom hover messages. If not provided or a
+ *                         specific key is not found, default hover messages will be used.
+ *
  * @throws IllegalArgumentException if there is an error loading the file.
  */
-class Message(private val file: File)
+class Message(file: File, val hoverMessages: Map<String, String> = mapOf())
 ```
 
 Retrieves the message associated with the given key.
@@ -189,6 +195,14 @@ visit_site: "Visit our <link=https://mc.com>rules page</link> before accepting c
 see_rules: "See our <link>https://mc.com</link> before accepting challenges."
 ```
 
+The default hover messages used for clickable tags are:
+
+- `link` - Click to open
+- `command` - Click to run
+
+You can override these default messages by passing a map with custom messages to the
+[`Message` class constructor](#creating-new-instance-of-message-with-custom-hover-messages).
+
 ## Using Color Codes in Messages
 
 You can use color codes within any message in your YAML files to change the color of the text.
@@ -220,6 +234,34 @@ warning_message: "&cBe careful! &6Make sure to follow the rules."
 ```
 
 ## Usage
+
+### Creating new instance of Message with default hover messages
+
+**`Main.kt`**
+
+```kotlin
+import java.io.File
+import dev.josantonius.minecraft.messaging.Message
+
+val message = Message(File("path/to/messages.yml"))
+```
+
+### Creating new instance of Message with custom hover messages
+
+**`Main.kt`**
+
+```kotlin
+import java.io.File
+import dev.josantonius.minecraft.messaging.Message
+
+val message = Message(
+    File("path/to/messages.yml"),
+    mapOf(
+        "link" to "Haz clic para abrir",
+        "command" to "Haz clic para ejecutar"
+    )
+)
+```
 
 ### Retrieves the message associated with the given key
 
