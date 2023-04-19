@@ -30,7 +30,7 @@ object ComponentUtils {
             return Component.text(input)
         }
 
-        val colorCodePattern = Pattern.compile("§([0-9a-fA-F])")
+        val colorCodePattern = Pattern.compile("§([0-9a-fA-Fk-oK-OrR])")
         var coloredInput = input
         var currentColor: NamedTextColor? = null
 
@@ -115,7 +115,7 @@ object ComponentUtils {
     }
 
     private fun minecraftColorCodeToAdventureColor(code: Char): NamedTextColor? {
-        return when (code) {
+        return when (code.lowercaseChar()) {
             '0' -> NamedTextColor.BLACK
             '1' -> NamedTextColor.DARK_BLUE
             '2' -> NamedTextColor.DARK_GREEN
