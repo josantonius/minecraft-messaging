@@ -10,9 +10,20 @@ import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 
-class Message(file: File) {
-
-    /** The FileConfiguration object representing the message file. */
+/**
+ * Represents a message with optional custom hover messages for link and command components.
+ *
+ * @property file The file from which the message is read.
+ * @property hoverMessages A map containing custom hover messages for link and command components.
+ * ```
+ *                         The keys should be "link" and "command", and the values should be the
+ *                         corresponding custom hover messages. If not provided or a specific key
+ *                         is not found, default hover messages will be used.
+ * ```
+ *
+ * @throws IllegalArgumentException if there is an error loading the file.
+ */
+class Message(file: File, val hoverMessages: Map<String, String> = mapOf()) {
     private var messages: FileConfiguration = YamlConfiguration()
 
     /**
@@ -152,7 +163,7 @@ class Message(file: File) {
      */
     private fun sendMessageToAll(key: String, vararg params: String) {
         val message = retrieve(key, *params)
-        val component = ComponentUtils.parseClickableComponents(message)
+        val component = ComponentUtils.parseClickableComponents(message, hoverMessages)
         Bukkit.getServer().sendMessage(component)
     }
 
@@ -166,7 +177,7 @@ class Message(file: File) {
      */
     private fun sendMessageToPlayer(player: Player, key: String, vararg params: String) {
         val message = retrieve(key, *params)
-        val component = ComponentUtils.parseClickableComponents(message)
+        val component = ComponentUtils.parseClickableComponents(message, hoverMessages)
         player.sendMessage(component)
     }
 
@@ -184,7 +195,7 @@ class Message(file: File) {
             vararg params: String
     ) {
         val message = retrieve(key, *params)
-        val component = ComponentUtils.parseClickableComponents(message)
+        val component = ComponentUtils.parseClickableComponents(message, hoverMessages)
         val playersWithPermission =
                 Bukkit.getServer().onlinePlayers.filter { it.hasPermission(permission) }
         playersWithPermission.forEach { it.sendMessage(component) }
@@ -207,7 +218,7 @@ class Message(file: File) {
             vararg params: String
     ) {
         val message = retrieve(key, *params)
-        val component = ComponentUtils.parseClickableComponents(message)
+        val component = ComponentUtils.parseClickableComponents(message, hoverMessages)
         val playersWithinRadius =
                 Bukkit.getServer().onlinePlayers.filter { it.location.distance(center) <= radius }
         playersWithinRadius.forEach { it.sendMessage(component) }
@@ -232,7 +243,7 @@ class Message(file: File) {
             vararg params: String
     ) {
         val message = retrieve(key, *params)
-        val component = ComponentUtils.parseClickableComponents(message)
+        val component = ComponentUtils.parseClickableComponents(message, hoverMessages)
         val playersWithPermissionAndWithinRadius =
                 Bukkit.getServer().onlinePlayers.filter {
                     it.hasPermission(permission) && it.location.distance(center) <= radius
