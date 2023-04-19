@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## [v1.0.3](https://github.com/josantonius/minecraft-messaging/releases/tag/v1.0.3) (2023-04-19)
+
+### Added
+
+* Added option to pass hover messages to the `Message` class instances.
+* Fixed a problem with the colors of clickable components.
+
 ## [v1.0.2](https://github.com/josantonius/minecraft-messaging/releases/tag/v1.0.2) (2023-04-18)
 
 ### Added
