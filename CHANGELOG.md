@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## [v1.0.5](https://github.com/josantonius/minecraft-messaging/releases/tag/v1.0.5) (2023-04-20)
+
+### Changed
+
+* `dev.josantonius.minecraft.messaging.Message.retrieve()` to
+`dev.josantonius.minecraft.messaging.Message.getString()`.
+
+### Added
+
+* `dev.josantonius.minecraft.messaging.Message.getComponent()` public method.
+
 ## [v1.0.4](https://github.com/josantonius/minecraft-messaging/releases/tag/v1.0.4) (2023-04-19)
 
 ### Changed
