@@ -4,6 +4,7 @@ import java.io.File
 import java.io.FileReader
 import java.io.IOException
 import java.util.logging.Level
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.configuration.file.FileConfiguration
@@ -38,13 +39,12 @@ class Message(file: File, val hoverMessages: Map<String, String> = mapOf()) {
     }
 
     /**
-     * Retrieves the message associated with the given key. If the message is not found, returns the
-     * given string.
+     * Retrieves associated with the given key, replaces placeholders and returns a string.
      *
      * @param key The key associated with the message in the message file.
      * @param params Optional parameters to replace placeholders in the message.
      */
-    fun retrieve(key: String, vararg params: String): String {
+    fun getString(key: String, vararg params: String): String {
         var message = messages.getString(key)
         if (message == null) {
             Bukkit.getLogger().warning("Message not found for key:$key")
@@ -54,6 +54,17 @@ class Message(file: File, val hoverMessages: Map<String, String> = mapOf()) {
             }
         }
         return message ?: key
+    }
+
+    /**
+     * Retrieves associated with the given key, replaces placeholders and returns a Component.
+     *
+     * @param key The key associated with the message in the message file.
+     * @param params Optional parameters to replace placeholders in the message.
+     */
+    fun getComponent(key: String, vararg params: String): Component {
+        var message = getString(key, *params)
+        return ComponentUtils.parseClickableComponents(message, hoverMessages)
     }
 
     /**
@@ -134,7 +145,7 @@ class Message(file: File, val hoverMessages: Map<String, String> = mapOf()) {
      * @param params Optional parameters to replace placeholders in the message.
      */
     fun sendToSystem(level: Level, key: String, vararg params: String) {
-        Bukkit.getLogger().log(level, retrieve(key, *params))
+        Bukkit.getLogger().log(level, getString(key, *params))
     }
 
     /**
@@ -162,9 +173,7 @@ class Message(file: File, val hoverMessages: Map<String, String> = mapOf()) {
      * @param params Optional parameters to replace placeholders in the message.
      */
     private fun sendMessageToAll(key: String, vararg params: String) {
-        val message = retrieve(key, *params)
-        val component = ComponentUtils.parseClickableComponents(message, hoverMessages)
-        Bukkit.getServer().sendMessage(component)
+        Bukkit.getServer().sendMessage(getComponent(key, *params))
     }
 
     /**
@@ -176,9 +185,7 @@ class Message(file: File, val hoverMessages: Map<String, String> = mapOf()) {
      * @param params Optional parameters to replace placeholders in the message.
      */
     private fun sendMessageToPlayer(player: Player, key: String, vararg params: String) {
-        val message = retrieve(key, *params)
-        val component = ComponentUtils.parseClickableComponents(message, hoverMessages)
-        player.sendMessage(component)
+        player.sendMessage(getComponent(key, *params))
     }
 
     /**
@@ -194,11 +201,9 @@ class Message(file: File, val hoverMessages: Map<String, String> = mapOf()) {
             key: String,
             vararg params: String
     ) {
-        val message = retrieve(key, *params)
-        val component = ComponentUtils.parseClickableComponents(message, hoverMessages)
         val playersWithPermission =
                 Bukkit.getServer().onlinePlayers.filter { it.hasPermission(permission) }
-        playersWithPermission.forEach { it.sendMessage(component) }
+        playersWithPermission.forEach { it.sendMessage(getComponent(key, *params)) }
     }
 
     /**
@@ -217,11 +222,9 @@ class Message(file: File, val hoverMessages: Map<String, String> = mapOf()) {
             key: String,
             vararg params: String
     ) {
-        val message = retrieve(key, *params)
-        val component = ComponentUtils.parseClickableComponents(message, hoverMessages)
         val playersWithinRadius =
                 Bukkit.getServer().onlinePlayers.filter { it.location.distance(center) <= radius }
-        playersWithinRadius.forEach { it.sendMessage(component) }
+        playersWithinRadius.forEach { it.sendMessage(getComponent(key, *params)) }
     }
 
     /**
@@ -242,12 +245,10 @@ class Message(file: File, val hoverMessages: Map<String, String> = mapOf()) {
             key: String,
             vararg params: String
     ) {
-        val message = retrieve(key, *params)
-        val component = ComponentUtils.parseClickableComponents(message, hoverMessages)
         val playersWithPermissionAndWithinRadius =
                 Bukkit.getServer().onlinePlayers.filter {
                     it.hasPermission(permission) && it.location.distance(center) <= radius
                 }
-        playersWithPermissionAndWithinRadius.forEach { it.sendMessage(component) }
+        playersWithPermissionAndWithinRadius.forEach { it.sendMessage(getComponent(key, *params)) }
     }
 }
