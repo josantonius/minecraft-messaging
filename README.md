@@ -73,15 +73,24 @@ Creates a new Message object with the given message file:
 class Message(file: File, val hoverMessages: Map<String, String> = mapOf())
 ```
 
-Retrieves the message associated with the given key.
-If the message is not found, returns the given string:
+Retrieves associated with the given key, replaces placeholders and returns a string:
 
 ```kotlin
 /**
  * @param key The key associated with the message in the message file.
  * @param params Optional parameters to replace placeholders in the message.
  */
-fun retrieve(key: String, vararg params: String): String
+fun getString(key: String, vararg params: String): String
+```
+
+Retrieves associated with the given key, replaces placeholders and returns a Component:
+
+```kotlin
+/**
+ * @param key The key associated with the message in the message file.
+ * @param params Optional parameters to replace placeholders in the message.
+ */
+fun getComponent(key: String, vararg params: String): Component
 ```
 
 Sends a message with the given key and optional parameters to all online players on the server:
@@ -280,12 +289,57 @@ import dev.josantonius.minecraft.messaging.Message
 
 val message = Message(File("path/to/messages.yml"))
 
-message.retrieve(
+message.getString(
     key = "player.win"
 )
 ```
 
 ### Retrieves the message associated with the given key with parameters
+
+**`messages.yml`**
+
+```yml
+command:
+  cancel: "Run <command>/cancel</command> to cancel the challenge."
+```
+
+**`Main.kt`**
+
+```kotlin
+import java.io.File
+import dev.josantonius.minecraft.messaging.Message
+
+val message = Message(File("path/to/messages.yml"))
+
+message.getComponent(
+    key = "command.cancel",
+    params = arrayOf("first")
+)
+```
+
+### Retrieves the component associated with the given key
+
+**`messages.yml`**
+
+```yml
+see:
+  rules: "See our <link>https://mc.com</link> before accepting challenges."
+```
+
+**`Main.kt`**
+
+```kotlin
+import java.io.File
+import dev.josantonius.minecraft.messaging.Message
+
+val message = Message(File("path/to/messages.yml"))
+
+message.getComponent(
+    key = "see.rules"
+)
+```
+
+### Retrieves the component associated with the given key with parameters
 
 **`messages.yml`**
 
@@ -302,7 +356,7 @@ import dev.josantonius.minecraft.messaging.Message
 
 val message = Message(File("path/to/messages.yml"))
 
-message.retrieve(
+message.getString(
     key = "player.win",
     params = arrayOf("first")
 )
