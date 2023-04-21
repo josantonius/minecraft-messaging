@@ -47,7 +47,7 @@ Then, add the minecraft-messaging library as a dependency to your project's buil
 
 ```groovy
 dependencies {
-    implementation 'dev.josantonius:minecraft-messaging:v1.0.8'
+    implementation 'dev.josantonius:minecraft-messaging:v1.0.9'
 }
 ```
 
@@ -138,7 +138,7 @@ Creates a new Title object with the given message file and optional Title.Times:
  *
  * @throws IllegalArgumentException if there is an error loading the file.
  */
-class Title(private val file: File, private val times: Title.Times?)
+class Title(private val file: File, private val times: AdventureTitle.Times? = null)
 ```
 
 Shows a title and subtitle with the given keys and optional parameters to all online players:
