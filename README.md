@@ -46,7 +46,7 @@ Then, add the minecraft-messaging library as a dependency to your project's buil
 
 ```groovy
 dependencies {
-    implementation 'dev.josantonius:minecraft-messaging:v1.0.0'
+    implementation 'dev.josantonius:minecraft-messaging:v1.0.6'
 }
 ```
 
