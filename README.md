@@ -16,9 +16,10 @@ The messages are stored in a YAML file and can be easily formatted with placehol
 - [Installation](#installation)
 - [Available Classes](#available-classes)
   - [Message Class](#message-class)
+  - [Title Class](#title-class)
 - [Usage](#usage)
-- [Using Clickable Tags in Messages](#using-clickable-tags-in-messages)
-- [Using Color Codes in Messages](#using-color-codes-in-messages)
+- [Using Clickable Tags](#using-clickable-tags)
+- [Using Color Codes](#using-color-codes)
 - [TODO](#todo)
 - [Changelog](#changelog)
 - [Contribution](#contribution)
@@ -46,7 +47,7 @@ Then, add the minecraft-messaging library as a dependency to your project's buil
 
 ```groovy
 dependencies {
-    implementation 'dev.josantonius:minecraft-messaging:v1.0.6'
+    implementation 'dev.josantonius:minecraft-messaging:v1.0.8'
 }
 ```
 
@@ -122,7 +123,48 @@ Sends a system message to the console:
 fun sendToConsole(plugin: JavaPlugin, key: String, vararg params: String)
 ```
 
-## Using Clickable Tags in Messages
+### Title Class
+
+`dev.josantonius.minecraft.messaging.Title`
+
+Creates a new Title object with the given message file and optional Title.Times:
+
+```kotlin
+/**
+ * Represents a title message with optional custom times.
+ *
+ * @property file  The file from which the message is read.
+ * @property times The Title.Times object containing fadeIn, stay, and fadeOut durations.
+ *
+ * @throws IllegalArgumentException if there is an error loading the file.
+ */
+class Title(private val file: File, private val times: Title.Times?)
+```
+
+Shows a title and subtitle with the given keys and optional parameters to all online players:
+
+```kotlin
+/**
+ * @param titleKey    The key associated with the title message in the message file.
+ * @param subtitleKey The key associated with the subtitle message in the message file.
+ * @param params      Optional parameters to replace placeholders in the messages.
+ */
+fun showToAll(titleKey: String, subtitleKey: String, vararg params: String)
+```
+
+Shows a title and subtitle with the given keys and optional parameters to a specific player:
+
+```kotlin
+/**
+ * @param player      The Player object to show the title to.
+ * @param titleKey    The key associated with the title message in the message file.
+ * @param subtitleKey The key associated with the subtitle message in the message file.
+ * @param params      Optional parameters to replace placeholders in the messages.
+ */
+fun showToPlayer(player: Player, titleKey: String, subtitleKey: String, vararg params: String)
+```
+
+## Using Clickable Tags
 
 With [MiniMessage](https://docs.advntr.dev/minimessage/format.html#click), you can create interactive messages by
 adding clickable tags such as hover and click events. Here are some examples of using clickable tags
@@ -136,7 +178,7 @@ info_message: "<click:run_command:/rules>Click here to view rules</click>"
 warning_message: "<click:suggest_command:/report >Report a user</click>"
 ```
 
-## Using Color Codes in Messages
+## Using Color Codes
 
 This library utilizes [MiniMessage](https://docs.advntr.dev/minimessage/format.html#color) to parse and handle color
 codes and text formatting in messages. You can use MiniMessage's syntax in your message strings to
@@ -152,7 +194,7 @@ warning_message: "<red><bold>Warning:</bold></red> Fly is not allowed "
 
 ## Usage
 
-### Creating new instance of Message with default hover messages
+### Creating new instance of Message
 
 **`Main.kt`**
 
@@ -161,7 +203,36 @@ import java.io.File
 import org.bukkit.plugin.java.JavaPlugin
 import dev.josantonius.minecraft.messaging.Message
 
-Message(File("path/to/messages.yml"), JavaPlugin())
+val message = Message(File("path/to/messages.yml"), JavaPlugin())
+```
+
+### Creating new instance of Title
+
+**`Main.kt`**
+
+```kotlin
+import java.io.File
+import dev.josantonius.minecraft.messaging.Title
+
+Title(File("path/to/titles.yml"))
+```
+
+### Creating new instance of Title with custom times
+
+**`Main.kt`**
+
+```kotlin
+import java.io.File
+import java.time.Duration
+import dev.josantonius.minecraft.messaging.Title
+
+val stay    = Duration.ofSeconds(5)
+val fadeIn  = Duration.ofSeconds(1)
+val fadeOut = Duration.ofMillis(1000)
+
+val times = Title.Times.of(fadeIn, stay, fadeOut)
+
+Title(File("path/to/titles.yml"), times)
 ```
 
 ### Retrieves the message associated with the given key
@@ -391,6 +462,151 @@ val message = Message(File("path/to/messages.yml"))
 message.sendToConsole(
     key = "info.wrong_input",
     params = arrayOf("command")
+)
+```
+
+### Show title and subtitle to a specific player
+
+**`titles.yml`**
+
+```yml
+title:
+  welcome: "Welcome!"
+  subtitle: "Enjoy your time on our server!"
+```
+
+**`Main.kt`**
+
+```kotlin
+import java.io.File
+import org.bukkit.entity.Player
+import dev.josantonius.minecraft.messaging.Title
+
+val title = Title(File("path/to/titles.yml"))
+val targetPlayer: Player = //...
+
+title.showToPlayer(
+    player = targetPlayer,
+    titleKey = "title.welcome",
+    subtitleKey = "title.subtitle"
+)
+```
+
+### Show title without subtitle to a specific player
+
+**`titles.yml`**
+
+```yml
+title:
+  warning: "Warning!"
+```
+
+**`Main.kt`**
+
+```kotlin
+import java.io.File
+import org.bukkit.entity.Player
+import dev.josantonius.minecraft.messaging.Title
+
+val title = Title(File("path/to/titles.yml"))
+val targetPlayer: Player = //...
+
+title.showToPlayer(
+    player = targetPlayer,
+    titleKey = "title.warning",
+    subtitleKey = ""
+)
+```
+
+### Show title without subtitle and with parameters to a specific player
+
+**`titles.yml`**
+
+```yml
+title:
+  congrats: "Congratulations, {1}!"
+```
+
+**`Main.kt`**
+
+```kotlin
+import java.io.File
+import org.bukkit.entity.Player
+import dev.josantonius.minecraft.messaging.Title
+
+val title = Title(File("path/to/titles.yml"))
+val targetPlayer: Player = //...
+
+title.showToPlayer(
+    player = targetPlayer,
+    titleKey = "title.congrats",
+    subtitleKey = "",
+    params = arrayOf(targetPlayer.name)
+)
+```
+
+### Show title and subtitle to all online players on the server
+
+**`titles.yml`**
+
+```yml
+welcome:
+  title: "Welcome to our Server!"
+  subtitle: "Enjoy your stay."
+```
+
+**`Main.kt`**
+
+```kotlin
+import java.io.File
+import dev.josantonius.minecraft.messaging.Title
+
+val title = Title(File("path/to/titles.yml"))
+
+title.showToAll("welcome.title", "welcome.subtitle")
+```
+
+### Show title without subtitle to all online players on the server
+
+**`titles.yml`**
+
+```yml
+event:
+  title: "Special Event Starting Soon!"
+```
+
+**`Main.kt`**
+
+```kotlin
+import java.io.File
+import dev.josantonius.minecraft.messaging.Title
+
+val title = Title(File("path/to/titles.yml"))
+
+title.showToAll("event.title", "")
+```
+
+### Show title without subtitle and with parameters to all online players on the server
+
+**`titles.yml`**
+
+```yml
+game:
+  title: "Game '{1}' Starting in {2} minutes!"
+```
+
+**`Main.kt`**
+
+```kotlin
+import java.io.File
+import dev.josantonius.minecraft.messaging.Title
+
+val title = Title(File("path/to/titles.yml"))
+
+title.showToAll(
+    titleKey = "game.title",
+    subtitleKey = "",
+    params = arrayOf("CaptureTheFlag", "5")
 )
 ```
 
