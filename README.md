@@ -62,18 +62,19 @@ Creates a new Message object with the given message file:
 /**
  * Represents a message with optional custom hover messages for link and command components.
  *
- * @property file The file from which the message is read.
+ * @property file   The file from which the message is read.
+ * @property plugin The JavaPlugin object representing your plugin instance.
  *
  * @throws IllegalArgumentException if there is an error loading the file.
  */
-class Message(file: File)
+class Message(private val file: File, private val plugin: JavaPlugin)
 ```
 
 Retrieves associated with the given key, replaces placeholders and returns a string:
 
 ```kotlin
 /**
- * @param key The key associated with the message in the message file.
+ * @param key    The key associated with the message in the message file.
  * @param params Optional parameters to replace placeholders in the message.
  */
 fun getString(key: String, vararg params: String): String
@@ -83,7 +84,7 @@ Retrieves associated with the given key, replaces placeholders and returns a Com
 
 ```kotlin
 /**
- * @param key The key associated with the message in the message file.
+ * @param key    The key associated with the message in the message file.
  * @param params Optional parameters to replace placeholders in the message.
  */
 fun getComponent(key: String, vararg params: String): Component
@@ -110,64 +111,15 @@ Sends a message with the given key and optional parameters to a specific player:
 fun sendToPlayer(player: Player, key: String, vararg params: String)
 ```
 
-Sends a message with the given key and optional parameters
-to all online players with the specified permission:
-
-```kotlin
-/**
- * @param permission The permission string to filter players by.
- * @param key        The key associated with the message in the message file.
- * @param params     Optional parameters to replace placeholders in the message.
- */
-fun sendToPlayersWithPermission(permission: String, key: String, vararg params: String)
-```
-
-Sends message to nearby players with given key and optional parameters:
-
-```kotlin
-/**
- * @param center The Location object representing the center of the radius.
- * @param radius The radius in which to send the message to players.
- * @param key    The key associated with the message in the message file.
- * @param params Optional parameters to replace placeholders in the message.
- */
-fun sendToPlayersWithinRadius(
-  center: Location,
-  radius: Double,
-  key: String,
-  vararg params: String
-)
-```
-
-Sends message to players with specific permission within a radius
-of a center point using a key and optional params:
-
-```kotlin
-/**
- * @param permission The permission string to filter players by.
- * @param center     The Location object representing the center of the radius.
- * @param radius     The radius in which to send the message to players.
- * @param key        The key associated with the message in the message file.
- * @param params     Optional parameters to replace placeholders in the message.
- */
-fun sendToPlayersWithPermissionWithinRadius(
-  permission: String,
-  center: Location,
-  radius: Double,
-  key: String,
-  vararg params: String
-)
-```
-
-Sends a system message with a level to the console:
+Sends a system message to the console:
 
 ```kotlin
 /**
  * @param plugin The JavaPlugin object representing your plugin instance.
- * @param key The key associated with the message in the message file.
+ * @param key    The key associated with the message in the message file.
  * @param params Optional parameters to replace placeholders in the message.
  */
-fun sendToSystem(plugin: JavaPlugin, key: String, vararg params: String)
+fun sendToConsole(plugin: JavaPlugin, key: String, vararg params: String)
 ```
 
 ## Using Clickable Tags in Messages
@@ -206,9 +158,10 @@ warning_message: "<red><bold>Warning:</bold></red> Fly is not allowed "
 
 ```kotlin
 import java.io.File
+import org.bukkit.plugin.java.JavaPlugin
 import dev.josantonius.minecraft.messaging.Message
 
-val message = Message(File("path/to/messages.yml"))
+Message(File("path/to/messages.yml"), JavaPlugin())
 ```
 
 ### Retrieves the message associated with the given key
@@ -395,162 +348,6 @@ message.sendToPlayer(
 )
 ```
 
-### Send message to all online players with a specific permission
-
-**`messages.yml`**
-
-```yml
-admin:
-  broadcast: "Attention: Server maintenance will start in 10 minutes."
-```
-
-**`Main.kt`**
-
-```kotlin
-import java.io.File
-import dev.josantonius.minecraft.messaging.Message
-
-val message = Message(File("path/to/messages.yml"))
-
-message.sendToPlayersWithPermission(
-    permission = "admin.notify",
-    key = "admin.broadcast"
-)
-```
-
-### Send message to all online players with a specific permission and parameters
-
-**`messages.yml`**
-
-```yml
-vip:
-  notify: "Hello {1}, {2} joined the VIP club!"
-```
-
-**`Main.kt`**
-
-```kotlin
-import java.io.File
-import dev.josantonius.minecraft.messaging.Message
-
-val message = Message(File("path/to/messages.yml"))
-
-message.sendToPlayersWithPermission(
-    permission = "admin.notify",
-    key = "admin.broadcast",
-    params = arrayOf("PlayerName", "NewVIP")
-)
-```
-
-### Send message to all online players within a specific radius
-
-**`messages.yml`**
-
-```yml
-local:
-  announcement: "Event starting nearby in {1} minutes."
-```
-
-**`Main.kt`**
-
-```kotlin
-import java.io.File
-import org.bukkit.Location
-import dev.josantonius.minecraft.messaging.Message
-
-val message = Message(File("path/to/messages.yml"))
-val center: Location = //...
-
-message.sendToPlayersWithinRadius(
-    center = center,
-    radius = 100.0,
-    key = "local.announcement",
-    params = arrayOf("5")
-)
-```
-
-### Send message to all online players within a specific radius and parameters
-
-**`messages.yml`**
-
-```yml
-treasure:
-  hint: "A treasure chest has been discovered at {1}x, {2}y, {3}z!"
-```
-
-**`Main.kt`**
-
-```kotlin
-import java.io.File
-import org.bukkit.Location
-import dev.josantonius.minecraft.messaging.Message
-
-val message = Message(File("path/to/messages.yml"))
-val center: Location = //...
-
-message.sendToPlayersWithinRadius(
-    center = center,
-    radius = 50.0,
-    key = "treasure.hint",
-    params = arrayOf("100", "200", "300")
-)
-```
-
-### Send message to all online players with permission within a specific radius
-
-**`messages.yml`**
-
-```yml
-local:
-  announcement: "Event starting nearby in 4 minutes."
-```
-
-**`Main.kt`**
-
-```kotlin
-import java.io.File
-import org.bukkit.Location
-import dev.josantonius.minecraft.messaging.Message
-
-val message = Message(File("path/to/messages.yml"))
-val center: Location = //...
-
-message.sendToPlayersWithPermissionWithinRadius(
-  permission = "announcement.use",
-  center = center,
-  radius = 100.0,
-  key = "local.announcement"
-)
-```
-
-### Send message to all players with permission within a specific radius and params
-
-**`messages.yml`**
-
-```yml
-treasure:
-  hint: "A treasure chest has been discovered at {1}x, {2}y, {3}z!"
-```
-
-**`Main.kt`**
-
-```kotlin
-import java.io.File
-import org.bukkit.Location
-import dev.josantonius.minecraft.messaging.Message
-
-val message = Message(File("path/to/messages.yml"))
-val center: Location = //...
-
-message.sendToPlayersWithPermissionWithinRadius(
-    permission = "treasure.use",
-    center = center,
-    radius = 50.0,
-    key = "treasure.hint",
-    params = arrayOf("100", "200", "300")
-)
-```
-
 ### Sends a system message to the console
 
 **`messages.yml`**
@@ -564,14 +361,11 @@ warnings:
 
 ```kotlin
 import java.io.File
-import java.util.logging.Level
-import org.bukkit.plugin.java.JavaPlugin
 import dev.josantonius.minecraft.messaging.Message
 
 val message = Message(File("path/to/messages.yml"))
 
-message.sendToSystem(
-    plugin = this,
+message.sendToConsole(
     key = "warnings.wrong_input"
 )
 ```
@@ -589,15 +383,12 @@ info:
 
 ```kotlin
 import java.io.File
-import java.util.logging.Level
-import org.bukkit.plugin.java.JavaPlugin
 import dev.josantonius.minecraft.messaging.Message
 
 val message = Message(File("path/to/messages.yml"))
 
 
-message.sendToSystem(
-    plugin = plugin,
+message.sendToConsole(
     key = "info.wrong_input",
     params = arrayOf("command")
 )
