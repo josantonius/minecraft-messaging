@@ -1,20 +1,23 @@
 # Changelog
 
+## [v1.0.7](https://github.com/josantonius/minecraft-messaging/releases/tag/v1.0.7) (2023-04-21)
+
+### Removed
+
+* `dev.josantonius.minecraft.messaging.Message.sendToPlayersWithPermissionWithinRadius()`.
+* `dev.josantonius.minecraft.messaging.Message.sendToPlayersWithinRadius()`.
+* `dev.josantonius.minecraft.messaging.Message.sendToPlayersWithPermission()`.
+
+### Changed
+
+* `dev.josantonius.minecraft.messaging.Message.sendToSystem()` to
+`dev.josantonius.minecraft.messaging.Message.sendToConsole()`.
+
 ## [v1.0.6](https://github.com/josantonius/minecraft-messaging/releases/tag/v1.0.6) (2023-04-21)
 
 ### Added
 
 * `net.kyori:adventure-platform-bukkit:4.3.0` dependency.
-
-### Changed
-
-* `dev.josantonius.minecraft.messaging.Message.sendToSystem(level: Level)` to
-`dev.josantonius.minecraft.messaging.Message.sendToSystem(plugin: JavaPlugin)` for compatibility
-with the new version of the `net.kyori:adventure-platform-bukkit` dependency.
-
-### Removed
-
-* `dev.josantonius.minecraft.messaging.ComponentUtils` class.
 
 ## [v1.0.5](https://github.com/josantonius/minecraft-messaging/releases/tag/v1.0.5) (2023-04-20)
 
