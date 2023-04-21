@@ -5,8 +5,7 @@
 
 Easily send messages to players on a Minecraft server running PaperMC, Bukkit, or Spigot.
 
-It supports sending messages to individual players, all players, players with specific permissions,
-players within a certain radius and players with specific permissions within a certain radius.
+It supports sending messages and titles to individual players, all players and console.
 
 The messages are stored in a YAML file and can be easily formatted with placeholders.
 
