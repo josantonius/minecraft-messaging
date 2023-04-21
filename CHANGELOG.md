@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.0.8](https://github.com/josantonius/minecraft-messaging/releases/tag/v1.0.8) (2023-04-21)
+
+### Added
+
+* `dev.josantonius.minecraft.messaging.Title` class.
+* `dev.josantonius.minecraft.messaging.Title.showToAll()` public method.
+* `dev.josantonius.minecraft.messaging.Title.showToPlayer()` public method.
+
 ## [v1.0.7](https://github.com/josantonius/minecraft-messaging/releases/tag/v1.0.7) (2023-04-21)
 
 ### Removed
