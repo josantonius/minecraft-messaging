@@ -63,14 +63,10 @@ Creates a new Message object with the given message file:
  * Represents a message with optional custom hover messages for link and command components.
  *
  * @property file The file from which the message is read.
- * @property hoverMessages A map with custom hover messages for link and command components.
- *                         The keys should be "link" and "command", and the values should be
- *                         the corresponding custom hover messages. If not provided or a
- *                         specific key is not found, default hover messages will be used.
  *
  * @throws IllegalArgumentException if there is an error loading the file.
  */
-class Message(file: File, val hoverMessages: Map<String, String> = mapOf())
+class Message(file: File)
 ```
 
 Retrieves associated with the given key, replaces placeholders and returns a string:
@@ -167,79 +163,39 @@ Sends a system message with a level to the console:
 
 ```kotlin
 /**
- * @param level The level of the system message for the console.
+ * @param plugin The JavaPlugin object representing your plugin instance.
  * @param key The key associated with the message in the message file.
  * @param params Optional parameters to replace placeholders in the message.
  */
-fun sendToSystem(level: Level, key: String, vararg params: String)
+fun sendToSystem(plugin: JavaPlugin, key: String, vararg params: String)
 ```
 
 ## Using Clickable Tags in Messages
 
-You can use the following tags within any message in your YAML files to create clickable links and
-commands:
-
-- Displays a clickable link that opens the specified URL when clicked.:
-
-  - `<link>URL</link>`
-
-- Displays a clickable link with custom text that opens the specified URL when clicked:
-
-  - `<link=URL>Custom Text</link>`
-
-- Displays a clickable text that runs the specified command when clicked.:
-
-  - `<command>Command</command>`
-
-- Displays a clickable text with custom text that runs the specified command when clicked:
-
-  - `<command=Command>Custom Text</command>`
+With [MiniMessage](https://docs.advntr.dev/minimessage/format.html#click), you can create interactive messages by
+adding clickable tags such as hover and click events. Here are some examples of using clickable tags
+in your messages:
 
 **Example usage in YAML files**:
 
 ```yml
-cancel_challenge: "Run <command>/cancel</command> to cancel the challenge."
-challenge_player: "Challenge a player by clicking <command=/challenge>here</command>."
-visit_site: "Visit our <link=https://mc.com>rules page</link> before accepting challenges."
-see_rules: "See our <link>https://mc.com</link> before accepting challenges."
+welcome_message: "<click:open_url:https://example.com>Visit our website</click>"
+info_message: "<click:run_command:/rules>Click here to view rules</click>"
+warning_message: "<click:suggest_command:/report >Report a user</click>"
 ```
-
-The default hover messages used for clickable tags are:
-
-- `link` - Click to open
-- `command` - Click to run
-
-You can override these default messages by passing a map with custom messages to the
-[`Message` class constructor](#creating-new-instance-of-message-with-custom-hover-messages).
 
 ## Using Color Codes in Messages
 
-You can use color codes within any message in your YAML files to change the color of the text.
-To apply a color, use the & symbol followed by a color code. Here are the available color codes:
-
-- `§0` - Black
-- `§1` - Dark Blue
-- `§2` - Dark Green
-- `§3` - Dark Aqua
-- `§4` - Dark Red
-- `§5` - Dark Purple
-- `§6` - Gold
-- `§7` - Gray
-- `§8` - Dark Gray
-- `§9` - Blue
-- `§a` - Green
-- `§b` - Aqua
-- `§c` - Red
-- `§d` - Light Purple
-- `§e` - Yellow
-- `§f` - White
+This library utilizes [MiniMessage](https://docs.advntr.dev/minimessage/format.html#color) to parse and handle color
+codes and text formatting in messages. You can use MiniMessage's syntax in your message strings to
+apply colors, formatting, and other features. Here are some examples of MiniMessage syntax:
 
 **Example usage in YAML files**:
 
 ```yml
-welcome_message: "&eWelcome to our server! &aHave fun and enjoy your stay."
-info_message: "&bFor more information, visit our &9<link={1}>website</link>&b."
-warning_message: "&cBe careful! &6Make sure to follow the rules."
+welcome_message: "<green>Welcome to our server!</green>"
+info_message: "<blue><bold>Info:</bold></blue> Remember to follow the server rules!"
+warning_message: "<red><bold>Warning:</bold></red> Fly is not allowed "
 ```
 
 ## Usage
@@ -253,23 +209,6 @@ import java.io.File
 import dev.josantonius.minecraft.messaging.Message
 
 val message = Message(File("path/to/messages.yml"))
-```
-
-### Creating new instance of Message with custom hover messages
-
-**`Main.kt`**
-
-```kotlin
-import java.io.File
-import dev.josantonius.minecraft.messaging.Message
-
-val message = Message(
-    File("path/to/messages.yml"),
-    mapOf(
-        "link" to "Haz clic para abrir",
-        "command" to "Haz clic para ejecutar"
-    )
-)
 ```
 
 ### Retrieves the message associated with the given key
@@ -612,7 +551,7 @@ message.sendToPlayersWithPermissionWithinRadius(
 )
 ```
 
-### Sends a system message with a level to the console
+### Sends a system message to the console
 
 **`messages.yml`**
 
@@ -626,17 +565,18 @@ warnings:
 ```kotlin
 import java.io.File
 import java.util.logging.Level
+import org.bukkit.plugin.java.JavaPlugin
 import dev.josantonius.minecraft.messaging.Message
 
 val message = Message(File("path/to/messages.yml"))
 
 message.sendToSystem(
-    level = Level.WARNING, 
+    plugin = this,
     key = "warnings.wrong_input"
 )
 ```
 
-### Sends a system message with a level to the console with parameters
+### Sends a system message to the console with parameters
 
 **`messages.yml`**
 
@@ -650,12 +590,14 @@ info:
 ```kotlin
 import java.io.File
 import java.util.logging.Level
+import org.bukkit.plugin.java.JavaPlugin
 import dev.josantonius.minecraft.messaging.Message
 
 val message = Message(File("path/to/messages.yml"))
 
+
 message.sendToSystem(
-    level = Level.INFO, 
+    plugin = plugin,
     key = "info.wrong_input",
     params = arrayOf("command")
 )
