@@ -3,13 +3,15 @@ package dev.josantonius.minecraft.messaging
 import java.io.File
 import java.io.FileReader
 import java.io.IOException
-import java.util.logging.Level
+import net.kyori.adventure.platform.bukkit.BukkitAudiences
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
+import org.bukkit.plugin.java.JavaPlugin
 
 /**
  * Represents a message with optional custom hover messages for link and command components.
@@ -26,6 +28,7 @@ import org.bukkit.entity.Player
  */
 class Message(file: File, val hoverMessages: Map<String, String> = mapOf()) {
     private var messages: FileConfiguration = YamlConfiguration()
+    private val miniMessage = MiniMessage.miniMessage()
 
     /**
      * Creates a new Message object with the given message file.
@@ -64,7 +67,7 @@ class Message(file: File, val hoverMessages: Map<String, String> = mapOf()) {
      */
     fun getComponent(key: String, vararg params: String): Component {
         var message = getString(key, *params)
-        return ComponentUtils.parseClickableComponents(message, hoverMessages)
+        return miniMessage.deserialize(message)
     }
 
     /**
@@ -74,7 +77,7 @@ class Message(file: File, val hoverMessages: Map<String, String> = mapOf()) {
      * @param params Optional parameters to replace placeholders in the message.
      */
     fun sendToAll(key: String, vararg params: String) {
-        sendMessageToAll(key, *params)
+        Bukkit.getServer().sendMessage(getComponent(key, *params))
     }
 
     /**
@@ -85,7 +88,7 @@ class Message(file: File, val hoverMessages: Map<String, String> = mapOf()) {
      * @param params Optional parameters to replace placeholders in the message.
      */
     fun sendToPlayer(player: Player, key: String, vararg params: String) {
-        sendMessageToPlayer(player, key, *params)
+        player.sendMessage(getComponent(key, *params))
     }
 
     /**
@@ -97,7 +100,9 @@ class Message(file: File, val hoverMessages: Map<String, String> = mapOf()) {
      * @param params Optional parameters to replace placeholders in the message.
      */
     fun sendToPlayersWithPermission(permission: String, key: String, vararg params: String) {
-        sendMessageToPlayersWithPermission(permission, key, *params)
+        val playersWithPermission =
+                Bukkit.getServer().onlinePlayers.filter { it.hasPermission(permission) }
+        playersWithPermission.forEach { it.sendMessage(getComponent(key, *params)) }
     }
 
     /**
@@ -114,7 +119,9 @@ class Message(file: File, val hoverMessages: Map<String, String> = mapOf()) {
             key: String,
             vararg params: String
     ) {
-        sendMessageToPlayersWithinRadius(center, radius, key, *params)
+        val playersWithinRadius =
+                Bukkit.getServer().onlinePlayers.filter { it.location.distance(center) <= radius }
+        playersWithinRadius.forEach { it.sendMessage(getComponent(key, *params)) }
     }
 
     /**
@@ -134,18 +141,24 @@ class Message(file: File, val hoverMessages: Map<String, String> = mapOf()) {
             key: String,
             vararg params: String
     ) {
-        sendMessageToPlayersWithPermissionWithinRadius(permission, center, radius, key, *params)
+        val playersWithPermissionAndWithinRadius =
+                Bukkit.getServer().onlinePlayers.filter {
+                    it.hasPermission(permission) && it.location.distance(center) <= radius
+                }
+        playersWithPermissionAndWithinRadius.forEach { it.sendMessage(getComponent(key, *params)) }
     }
 
     /**
      * Sends a system message with a level to the console.
      *
-     * @param level The level of the system message for the console.
+     * @param plugin The JavaPlugin object representing your plugin instance.
      * @param key The key associated with the message in the message file.
      * @param params Optional parameters to replace placeholders in the message.
      */
-    fun sendToSystem(level: Level, key: String, vararg params: String) {
-        Bukkit.getLogger().log(level, getString(key, *params))
+    fun sendToSystem(plugin: JavaPlugin, key: String, vararg params: String) {
+        val messageComponent = getComponent(key, *params)
+        val adventure = BukkitAudiences.create(plugin)
+        adventure.console().sendMessage(messageComponent)
     }
 
     /**
@@ -163,92 +176,5 @@ class Message(file: File, val hoverMessages: Map<String, String> = mapOf()) {
         } catch (e: IOException) {
             throw IllegalArgumentException("Error loading message file", e)
         }
-    }
-
-    /**
-     * Creates a Component with the message retrieved from the 'messages' object using the key and
-     * optional parameters, then sends it to all online players on the server.
-     *
-     * @param key The key associated with the message in the message file.
-     * @param params Optional parameters to replace placeholders in the message.
-     */
-    private fun sendMessageToAll(key: String, vararg params: String) {
-        Bukkit.getServer().sendMessage(getComponent(key, *params))
-    }
-
-    /**
-     * Creates a Component with the message retrieved from the 'messages' object using the key and
-     * optional parameters, then sends it to the specified player.
-     *
-     * @param player The Player object to send the message to.
-     * @param key The key associated with the message in the message file.
-     * @param params Optional parameters to replace placeholders in the message.
-     */
-    private fun sendMessageToPlayer(player: Player, key: String, vararg params: String) {
-        player.sendMessage(getComponent(key, *params))
-    }
-
-    /**
-     * Creates a Component with the message retrieved from the 'messages' object using the key and
-     * optional parameters, then sends it to all online players with the specified permission.
-     *
-     * @param permission The permission string to filter players by.
-     * @param key The key associated with the message in the message file.
-     * @param params Optional parameters to replace placeholders in the message.
-     */
-    private fun sendMessageToPlayersWithPermission(
-            permission: String,
-            key: String,
-            vararg params: String
-    ) {
-        val playersWithPermission =
-                Bukkit.getServer().onlinePlayers.filter { it.hasPermission(permission) }
-        playersWithPermission.forEach { it.sendMessage(getComponent(key, *params)) }
-    }
-
-    /**
-     * Creates a Component with the message retrieved from the 'messages' object using the key and
-     * optional parameters, then sends it to all online players within the specified radius around
-     * the center location.
-     *
-     * @param center The Location object representing the center of the radius.
-     * @param radius The radius in which to send the message to players.
-     * @param key The key associated with the message in the message file.
-     * @param params Optional parameters to replace placeholders in the message.
-     */
-    private fun sendMessageToPlayersWithinRadius(
-            center: Location,
-            radius: Double,
-            key: String,
-            vararg params: String
-    ) {
-        val playersWithinRadius =
-                Bukkit.getServer().onlinePlayers.filter { it.location.distance(center) <= radius }
-        playersWithinRadius.forEach { it.sendMessage(getComponent(key, *params)) }
-    }
-
-    /**
-     * Creates a Component with the message retrieved from the 'messages' object using the key and
-     * optional parameters, then sends it to all online players with the specified permission and
-     * within the specified radius around the center location.
-     *
-     * @param permission The permission string to filter players by.
-     * @param center The Location object representing the center of the radius.
-     * @param radius The radius in which to send the message to players.
-     * @param key The key associated with the message in the message file.
-     * @param params Optional parameters to replace placeholders in the message.
-     */
-    private fun sendMessageToPlayersWithPermissionWithinRadius(
-            permission: String,
-            center: Location,
-            radius: Double,
-            key: String,
-            vararg params: String
-    ) {
-        val playersWithPermissionAndWithinRadius =
-                Bukkit.getServer().onlinePlayers.filter {
-                    it.hasPermission(permission) && it.location.distance(center) <= radius
-                }
-        playersWithPermissionAndWithinRadius.forEach { it.sendMessage(getComponent(key, *params)) }
     }
 }
