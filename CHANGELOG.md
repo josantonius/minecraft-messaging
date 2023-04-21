@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.0.9](https://github.com/josantonius/minecraft-messaging/releases/tag/v1.0.9) (2023-04-22)
+
+### Fixed
+
+* Fixed `times` argument in `Title` class as null.
+
 ## [v1.0.8](https://github.com/josantonius/minecraft-messaging/releases/tag/v1.0.8) (2023-04-21)
 
 ### Added
