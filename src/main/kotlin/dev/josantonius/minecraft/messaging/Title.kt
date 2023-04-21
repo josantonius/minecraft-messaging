@@ -14,7 +14,8 @@ import org.bukkit.entity.Player
  *
  * @throws IllegalArgumentException if there is an error loading the file.
  */
-class Title(private val file: File, private val times: AdventureTitle.Times?) : MessageBase(file) {
+class Title(private val file: File, private val times: AdventureTitle.Times? = null) :
+        MessageBase(file) {
 
     /**
      * Shows a title and subtitle with the given keys and optional parameters to all online players.
