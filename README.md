@@ -3,7 +3,7 @@
 [![Release](https://jitpack.io/v/dev.josantonius/minecraft-messaging.svg)](https://jitpack.io/#dev.josantonius/minecraft-messaging)
 [![License](https://img.shields.io/github/license/josantonius/minecraft-messaging)](LICENSE)
 
-Easily send messages to players on a Minecraft server running PaperMC, Bukkit, or Spigot.
+Easily send messages to players on a Minecraft server running PurPur, Paper, Bukkit, or Spigot.
 
 It supports sending messages and titles to individual players, all players and console.
 
@@ -30,7 +30,7 @@ The messages are stored in a YAML file and can be easily formatted with placehol
 ## Requirements
 
 - Java 17
-- PaperMC server 1.19.3 or Bukkit/Spigot server compatible with the PaperMC API version used.
+- Purpur server 1.19.3 or Paper/Bukkit/Spigot server compatible with the Purpur API version used.
 
 ## Installation
 
@@ -56,18 +56,73 @@ dependencies {
 
 `dev.josantonius.minecraft.messaging.Message`
 
-Creates a new Message object with the given message file:
+Set the prefix for console messages:
 
 ```kotlin
 /**
- * Represents a message with optional custom hover messages for link and command components.
- *
- * @property file   The file from which the message is read.
- * @property plugin The JavaPlugin object representing your plugin instance.
- *
- * @throws IllegalArgumentException if there is an error loading the file.
+ * @param prefix The prefix to use for console messages.
  */
-class Message(private val file: File, private val plugin: JavaPlugin)
+fun setConsolePrefix(prefix: String)
+```
+
+Set the prefix for chat messages:
+
+```kotlin
+/**
+ * @param prefix The prefix to use for chat messages.
+ */
+fun setChatPrefix(prefix: String)
+```
+
+Sends a message with the given key and optional parameters to all online players on the server:
+
+```kotlin
+/**
+ * @param key    The key associated with the message in the message file.
+ * @param params Optional parameters to replace placeholders in the message.
+ */
+fun sendToPlayers(key: String, vararg params: String)
+```
+
+Sends a message with the given key and optional parameters to a specific player:
+
+```kotlin
+/**
+ * @param player The Player object to send the message to.
+ * @param key    The key associated with the message in the message file.
+ * @param params Optional parameters to replace placeholders in the message.
+ */
+fun sendToPlayer(player: Player, key: String, vararg params: String)
+```
+
+Sends a message with the given key and optional parameters to all online players on the server:
+
+```kotlin
+/**
+ * @param key    The key associated with the message in the message file.
+ * @param params Optional parameters to replace placeholders in the message.
+ */
+fun sendToPlayers(key: String, vararg params: String)
+```
+
+Sends a system message to the console:
+
+```kotlin
+/**
+ * @param key    The key associated with the message in the message file.
+ * @param params Optional parameters to replace placeholders in the message.
+ */
+fun sendToConsole(key: String, vararg params: String)
+```
+
+Sends a message with the given key and optional parameters to online players and the console:
+
+```kotlin
+/**
+ * @param key The key associated with the message in the message file.
+ * @param params Optional parameters to replace placeholders in the message.
+ */
+fun broadcast(key: String, vararg params: String)
 ```
 
 Retrieves associated with the given key, replaces placeholders and returns a string:
@@ -88,38 +143,6 @@ Retrieves associated with the given key, replaces placeholders and returns a Com
  * @param params Optional parameters to replace placeholders in the message.
  */
 fun getComponent(key: String, vararg params: String): Component
-```
-
-Sends a message with the given key and optional parameters to all online players on the server:
-
-```kotlin
-/**
- * @param key    The key associated with the message in the message file.
- * @param params Optional parameters to replace placeholders in the message.
- */
-fun sendToAll(key: String, vararg params: String)
-```
-
-Sends a message with the given key and optional parameters to a specific player:
-
-```kotlin
-/**
- * @param player The Player object to send the message to.
- * @param key    The key associated with the message in the message file.
- * @param params Optional parameters to replace placeholders in the message.
- */
-fun sendToPlayer(player: Player, key: String, vararg params: String)
-```
-
-Sends a system message to the console:
-
-```kotlin
-/**
- * @param plugin The JavaPlugin object representing your plugin instance.
- * @param key    The key associated with the message in the message file.
- * @param params Optional parameters to replace placeholders in the message.
- */
-fun sendToConsole(plugin: JavaPlugin, key: String, vararg params: String)
 ```
 
 ### Title Class
@@ -148,7 +171,7 @@ Shows a title and subtitle with the given keys and optional parameters to all on
  * @param subtitleKey The key associated with the subtitle message in the message file.
  * @param params      Optional parameters to replace placeholders in the messages.
  */
-fun showToAll(titleKey: String, subtitleKey: String, vararg params: String)
+fun showToPlayers(titleKey: String, subtitleKey: String, vararg params: String)
 ```
 
 Shows a title and subtitle with the given keys and optional parameters to a specific player:
@@ -234,14 +257,7 @@ val times = Title.Times.of(fadeIn, stay, fadeOut)
 Title(File("path/to/titles.yml"), times)
 ```
 
-### Retrieves the message associated with the given key
-
-**`messages.yml`**
-
-```yml
-player:
-  win: "Congratulations, you won the game!"
-```
+### Set console prefix for messages
 
 **`Main.kt`**
 
@@ -251,19 +267,10 @@ import dev.josantonius.minecraft.messaging.Message
 
 val message = Message(File("path/to/messages.yml"))
 
-message.getString(
-    key = "player.win"
-)
+message.setConsolePrefix("[MyPlugin]")
 ```
 
-### Retrieves the message associated with the given key with parameters
-
-**`messages.yml`**
-
-```yml
-command:
-  cancel: "Run <command>/cancel</command> to cancel the challenge."
-```
+### Set chat prefix for messages
 
 **`Main.kt`**
 
@@ -273,55 +280,7 @@ import dev.josantonius.minecraft.messaging.Message
 
 val message = Message(File("path/to/messages.yml"))
 
-message.getComponent(
-    key = "command.cancel",
-    params = arrayOf("first")
-)
-```
-
-### Retrieves the component associated with the given key
-
-**`messages.yml`**
-
-```yml
-see:
-  rules: "See our <link>https://mc.com</link> before accepting challenges."
-```
-
-**`Main.kt`**
-
-```kotlin
-import java.io.File
-import dev.josantonius.minecraft.messaging.Message
-
-val message = Message(File("path/to/messages.yml"))
-
-message.getComponent(
-    key = "see.rules"
-)
-```
-
-### Retrieves the component associated with the given key with parameters
-
-**`messages.yml`**
-
-```yml
-player:
-  win: "Congratulations, you won the {1} game!"
-```
-
-**`Main.kt`**
-
-```kotlin
-import java.io.File
-import dev.josantonius.minecraft.messaging.Message
-
-val message = Message(File("path/to/messages.yml"))
-
-message.getString(
-    key = "player.win",
-    params = arrayOf("first")
-)
+message.setChatPrefix("<red>[MyPlugin]<white>")
 ```
 
 ### Send message to all online players on the server
@@ -341,7 +300,7 @@ import dev.josantonius.minecraft.messaging.Message
 
 val message = Message(File("path/to/messages.yml"))
 
-message.sendToAll("welcome.message")
+message.sendToPlayers("welcome.message")
 ```
 
 ### Send message to all online players on the server with parameters
@@ -361,7 +320,7 @@ import dev.josantonius.minecraft.messaging.Message
 
 val message = Message(File("path/to/messages.yml"))
 
-message.sendToAll(
+message.sendToPlayers(
     key = "game.start",
     params = arrayOf("CaptureTheFlag", "everyone")
 )
@@ -464,6 +423,142 @@ message.sendToConsole(
 )
 ```
 
+### Sends a message to all online players and the console
+
+**`messages.yml`**
+
+```yml
+warning:
+  restart: "Warning: The server will restart."
+```
+
+**`Main.kt`**
+
+```kotlin
+import java.io.File
+import dev.josantonius.minecraft.messaging.Message
+
+val message = Message(File("path/to/messages.yml"))
+
+message.broadcast(
+    key = "warning.restart"
+)
+```
+
+### Sends a message to all online players and the console with parameters
+
+**`messages.yml`**
+
+```yml
+warning:
+  restart: "Warning: The server will in {1} minutes."
+```
+
+**`Main.kt`**
+
+```kotlin
+import java.io.File
+import dev.josantonius.minecraft.messaging.Message
+
+val message = Message(File("path/to/messages.yml"))
+
+
+message.broadcast(
+    key = "warning.restart"
+    params = arrayOf("10")
+)
+```
+
+### Retrieves the message associated with the given key
+
+**`messages.yml`**
+
+```yml
+player:
+  win: "Congratulations, you won the game!"
+```
+
+**`Main.kt`**
+
+```kotlin
+import java.io.File
+import dev.josantonius.minecraft.messaging.Message
+
+val message = Message(File("path/to/messages.yml"))
+
+message.getString(
+    key = "player.win"
+)
+```
+
+### Retrieves the message associated with the given key with parameters
+
+**`messages.yml`**
+
+```yml
+command:
+  cancel: "Run <command>/cancel</command> to cancel the challenge."
+```
+
+**`Main.kt`**
+
+```kotlin
+import java.io.File
+import dev.josantonius.minecraft.messaging.Message
+
+val message = Message(File("path/to/messages.yml"))
+
+message.getString(
+    key = "command.cancel",
+    params = arrayOf("first")
+)
+```
+
+### Retrieves the component associated with the given key
+
+**`messages.yml`**
+
+```yml
+see:
+  rules: "See our <link>https://mc.com</link> before accepting challenges."
+```
+
+**`Main.kt`**
+
+```kotlin
+import java.io.File
+import dev.josantonius.minecraft.messaging.Message
+
+val message = Message(File("path/to/messages.yml"))
+
+message.getComponent(
+    key = "see.rules"
+)
+```
+
+### Retrieves the component associated with the given key with parameters
+
+**`messages.yml`**
+
+```yml
+player:
+  win: "Congratulations, you won the {1} game!"
+```
+
+**`Main.kt`**
+
+```kotlin
+import java.io.File
+import dev.josantonius.minecraft.messaging.Message
+
+val message = Message(File("path/to/messages.yml"))
+
+message.getComponent(
+    key = "player.win",
+    params = arrayOf("first")
+)
+```
+
 ### Show title and subtitle to a specific player
 
 **`titles.yml`**
@@ -562,7 +657,7 @@ import dev.josantonius.minecraft.messaging.Title
 
 val title = Title(File("path/to/titles.yml"))
 
-title.showToAll("welcome.title", "welcome.subtitle")
+title.showToPlayers("welcome.title", "welcome.subtitle")
 ```
 
 ### Show title without subtitle to all online players on the server
@@ -582,7 +677,7 @@ import dev.josantonius.minecraft.messaging.Title
 
 val title = Title(File("path/to/titles.yml"))
 
-title.showToAll("event.title", "")
+title.showToPlayers("event.title", "")
 ```
 
 ### Show title without subtitle and with parameters to all online players on the server
@@ -602,7 +697,7 @@ import dev.josantonius.minecraft.messaging.Title
 
 val title = Title(File("path/to/titles.yml"))
 
-title.showToAll(
+title.showToPlayers(
     titleKey = "game.title",
     subtitleKey = "",
     params = arrayOf("CaptureTheFlag", "5")
