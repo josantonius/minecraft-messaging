@@ -1,5 +1,23 @@
 # Changelog
 
+## [v1.1.0](https://github.com/josantonius/minecraft-messaging/releases/tag/v1.1.0) (2023-05-01)
+
+### Added
+
+* `dev.josantonius.minecraft.messaging.Message.broadcast()` public method.
+* `dev.josantonius.minecraft.messaging.Message.setChatPrefix()` public method.
+* `dev.josantonius.minecraft.messaging.Message.setConsolePrefix()` public method.
+
+### Changed
+
+* Change Paper dependency to Purpur.
+
+* `dev.josantonius.minecraft.messaging.Message.sendToAll()` to
+`dev.josantonius.minecraft.messaging.Message.sendToPlayers()`.
+
+* `dev.josantonius.minecraft.messaging.Title.showToAll()` to
+`dev.josantonius.minecraft.messaging.Title.showToPlayers()`.
+
 ## [v1.0.9](https://github.com/josantonius/minecraft-messaging/releases/tag/v1.0.9) (2023-04-22)
 
 ### Fixed
